@@ -1,0 +1,8 @@
+{
+  "name": "stpl",
+  "description": "",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::339468856116:role/stpl_lambda_function",
+  "environment": {}
+}
