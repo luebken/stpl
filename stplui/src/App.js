@@ -34,9 +34,11 @@ class App extends Component {
           <Menu.Item name='package' as={NavLink} to='/package'>
             Package
         </Menu.Item>
-          <Menu.Item name='app' as={NavLink} to='/app'>
+        {/*
+        <Menu.Item name='app' as={NavLink} to='/app'>
             App
         </Menu.Item>
+        */}
           <Menu.Menu position='right'>
             <Menu.Item name='logout' onClick={this.handleLogOut} />
           </Menu.Menu>
