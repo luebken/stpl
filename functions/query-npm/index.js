@@ -7,7 +7,10 @@ const myS3 = require('lib/utils-s3')
 // Trigger via SNS
 // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
 //https://registry.npmjs.com/express/4.15.4
-exports.handle = (event, context, mainCallback) => {
+
+const iopipe = require('iopipe')();
+
+exports.handle = iopipe((event, context, mainCallback) => {
   var message = event.Records[0].Sns.Message
   console.log('Message received from SNS:', message)
   var msg = JSON.parse(message)
@@ -39,4 +42,4 @@ exports.handle = (event, context, mainCallback) => {
       })
     }
   })
-}
+})

@@ -9,6 +9,7 @@
   "author": "",
   "dependencies": {
     "graphql": "~0.9.1",
+    "iopipe": "^1.2.1",
     "lodash": "~4.16.4",
     "uuid": "~3.0.1"
   }

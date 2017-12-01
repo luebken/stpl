@@ -9,7 +9,9 @@ function runQuery(query, claims, variables) {
   return G.graphql(schema.Schema, query, { claims: claims }, null, variables)
 }
 
-module.exports.handle = (event, context, cb) => {
+const iopipe = require('iopipe')();
+
+module.exports.handle = iopipe((event, context, cb) => {
   l.ConsoleSLog('Received SNS event', event)
   var userInfo = {}
   if (event.requestContext && event.requestContext.authorizer) {
@@ -59,4 +61,4 @@ module.exports.handle = (event, context, cb) => {
       l.ConsoleSLog('err after runQuery ', err)
       cb(err)
     })
-}
+})

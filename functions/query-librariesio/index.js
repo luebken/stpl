@@ -7,7 +7,9 @@ const LIBRARIES_IO_API_KEY = process.env.LIBRARIES_IO_API_KEY
 
 // Query and store a component in S3 /query/{ecosystem}/{package}
 // Trigger via SNS
-exports.handle = (event, context, mainCallback) => {
+const iopipe = require('iopipe')();
+
+exports.handle = iopipe((event, context, mainCallback) => {
   var message = event.Records[0].Sns.Message
   console.log('Message received from SNS:', message)
   var msg = JSON.parse(message)
@@ -30,4 +32,4 @@ exports.handle = (event, context, mainCallback) => {
       mainCallback(err)
     })
   })
-}
+})

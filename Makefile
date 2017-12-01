@@ -1,8 +1,12 @@
 .DEFAULT_GOAL := help
 
+FUNCDIRS := $(wildcard functions/*)
+
 install: ## Install the UI and function dependencies.
 	cd stplui; npm install
-	cd functions/gql; npm install
+	for dir in $(FUNCDIRS); do \
+		cd $$dir; npm install; cd ../..; \
+    done
 
 ui-localstart: ## Starts the reactapp.
 	cd stplui; npm start
@@ -15,7 +19,7 @@ localserve: ## Serves the ui build locally.
 	cd stplui/build; python -m SimpleHTTPServer
 
 deploy: ## Deploys the UI and the functions. Run "make ui-build" before.
-	@apex deploy --set LIBRARIES_IO_API_KEY=$(LIBRARIES_IO_API_KEY) --set VERSIONEYE_API_KEY=$(VERSIONEYE_API_KEY)
+	apex deploy --set LIBRARIES_IO_API_KEY=$(LIBRARIES_IO_API_KEY) --set VERSIONEYE_API_KEY=$(VERSIONEYE_API_KEY) --set IOPIPE_TOKEN=$(IOPIPE_TOKEN)
 	aws s3 sync --exclude *.map  stplui/build/ s3://i.stpl.io --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
 help: ##Shows help message

@@ -1,0 +1,11 @@
+{
+  "name": "pre-signup",
+  "private": true,
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "iopipe": "^1.2.1"
+  }
+}
