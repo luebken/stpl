@@ -17,11 +17,11 @@ module.exports.handle = iopipe((event, context, cb) => {
   if (event.requestContext && event.requestContext.authorizer) {
     userInfo = event.requestContext.authorizer.claims
   }
-
   const request = JSON.parse(event.body)
-
+  var start = Date.now()
   return runQuery(request.query, userInfo, request.variables)
-    .then(response => {
+  .then(response => {
+      console.log('METRIC', 'gqlquery.duration', Date.now() - start)
       // TODO differentiate: missing / updated
       // TODO ensure main is always present
       var repository = response.data.main ? response.data.main.repository : ''

@@ -6,6 +6,7 @@ const ConsoleSLog = log.ConsoleSLog
 const ConsoleSError = log.ConsoleSError
 
 module.exports.resolveNpm = (context, args) => {
+  var start = Date.now()  
   ConsoleSLog('resolveNpm context: ', context)
   ConsoleSLog('resolveNpm args: ', args)
   const pkg = args.name
@@ -30,7 +31,8 @@ module.exports.resolveNpm = (context, args) => {
         maintenance: object.score.detail.maintenance
       }
     }
-    ConsoleSLog('resolveLibrariesio result:', result)
+    ConsoleSLog('resolveNpm result:', result)
+    console.log('METRIC', 'resolveNpm.duration', Date.now() - start)
     return result
   }).catch(err => {
     ConsoleSError('Err in resolveLibrariesio:', err)

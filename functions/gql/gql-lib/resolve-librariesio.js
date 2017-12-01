@@ -6,6 +6,7 @@ const ConsoleSLog = log.ConsoleSLog
 const ConsoleSError = log.ConsoleSError
 
 module.exports.resolveLibrariesio = (context, args) => {
+  var start = Date.now()  
   ConsoleSLog('resolveLibrariesio context: ', context)
   ConsoleSLog('resolveLibrariesio args: ', args)
   const pkg = args.name
@@ -33,6 +34,7 @@ module.exports.resolveLibrariesio = (context, args) => {
       keywords: librariosioDataBody.keywords
     }
     ConsoleSLog('resolveLibrariesio result:', result)
+    console.log('METRIC', 'resolveLibrariesio.duration', Date.now() - start)
     return result
   }).catch(err => {
     ConsoleSError('Err in resolveLibrariesio:', err)
