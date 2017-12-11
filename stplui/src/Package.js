@@ -83,7 +83,7 @@ class Package extends Component {
           <Segment.Group horizontal >
             <Segment>
               <span style={{ 'color': '#b0b0b0' }}>Status: </span>
-              <span style={{ 'color': this.state.fullresult && this.state.fullresult.daviddm.status === 'insecure' ? '#db2828' : '#b0b0b0' }}>
+              <span style={{ 'color': this.state.fullresult && this.state.fullresult.daviddm && this.state.fullresult.daviddm.status === 'insecure' ? '#db2828' : '#b0b0b0' }}>
                 {this.state.fullresult && this.state.fullresult.daviddm ? this.state.fullresult.daviddm.status : ''}
               </span>
               <a href={this.state.fullresult ? 'https://david-dm.org/' + this.state.fullresult.main.repository + '/' + this.state.fullresult.main.name : ''}> david-dm.org</a>
@@ -175,8 +175,8 @@ class Package extends Component {
             loading: false
           });
         } else if (result.status === 404) {
-          console.log('404 trying again in 3 seconds')
-          setTimeout(that.getDataFromServer(), 5000);
+          //console.log('404 trying again in 3 seconds')
+          //setTimeout(that.getDataFromServer(), 5000);
         } else {
           console.log("Err. Unkown status ", result.status, ' Body:', result.body)
           that.setState({ description: 'dummy desc' });

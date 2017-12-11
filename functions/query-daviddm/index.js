@@ -1,9 +1,9 @@
 'use strict'
 
-// Query and store a component in S3 /query/{ecosystem}/{package}
+// Query and store a component
 // Trigger via SNS
 const utils = require('./lib/utils-http')
-const myS3 = require('./lib/utils-s3')
+const myDDB = require('./lib/utils-ddb')
 
 exports.handle = (event, context, mainCallback) => {
   var message = event.Records[0].Sns.Message
@@ -28,9 +28,8 @@ exports.handle = (event, context, mainCallback) => {
       }
       /// TODO use org / project. but that makes the gql more complicated
       // const key = 'daviddm/' + org + '/' + project
-      const key = 'daviddm/by-ep/' + ecosystem + '/' + pkg
-      myS3.SaveJsonToS3(key, json).then((msg) => {
-        console.log('success: SaveJsonToS3', msg)
+      myDDB.PutJson('daviddm', ecosystem, pkg, json).then((msg) => {
+        console.log('success: PutJson', msg)
         mainCallback()
       }).catch((err) => {
         console.log('error:', err)
