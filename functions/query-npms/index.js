@@ -1,9 +1,9 @@
 'use strict'
 
 const utils = require('lib/utils-http')
-const myS3 = require('lib/utils-s3')
+const myDDB = require('./lib/utils-ddb')
 
-// Query and store a component in S3 /query/{ecosystem}/{package}
+// Query and store a component /query/{ecosystem}/{package}
 // Trigger via SNS
 exports.handle = (event, context, mainCallback) => {
   var message = event.Records[0].Sns.Message
@@ -20,9 +20,12 @@ exports.handle = (event, context, mainCallback) => {
       console.log('error:', err)
       mainCallback(err)
     }
-    const key = 'npms/npm/' + json.collected.metadata.name
-    myS3.SaveJsonToS3(key, json).then((msg) => {
-      console.log('success: SaveJsonToS3', msg)
+    const source = 'npms'
+    const ecosystem = 'npm'
+    const pkg = json.collected.metadata.name
+
+    myDDB.PutJson(source, ecosystem, pkg, json).then((msg) => {
+      console.log('success: PutJson', msg)
       mainCallback()
     }).catch((err) => {
       console.log('error:', err)

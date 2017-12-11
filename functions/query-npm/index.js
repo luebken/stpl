@@ -1,9 +1,10 @@
 'use strict'
 
 const utils = require('lib/utils-http')
-const myS3 = require('lib/utils-s3')
+const myDDB = require('./lib/utils-ddb')
 
-// Query and store a component in S3 /query/{ecosystem}/{package}
+
+// Query and store a component
 // Trigger via SNS
 // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
 //https://registry.npmjs.com/express/4.15.4
@@ -29,9 +30,11 @@ exports.handle = (event, context, mainCallback) => {
       console.log('0 results for pgk: ' + encodeURIComponent(pkg))
       mainCallback()
     } else {
-      const key = 'npm/npm/' + json.objects[0].package.name
-      myS3.SaveJsonToS3(key, json).then((msg) => {
-        console.log('success: SaveJsonToS3 at key ' + key + ' msg:', msg)
+      const source = 'npm'
+      const ecosystem = 'npm'
+      const pkg = json.objects[0].package.name
+      myDDB.PutJson(source, ecosystem, pkg, json).then((msg) => {
+        console.log('success: PutJson. msg:', msg)
         mainCallback()
       }).catch((err) => {
         console.log('error:', err)

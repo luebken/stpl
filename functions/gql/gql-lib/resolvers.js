@@ -1,22 +1,21 @@
 const AWS = require('aws-sdk')
-const s3 = new AWS.S3()
 
 const log = require('../lib/utils-log')
 const ConsoleSLog = log.ConsoleSLog
 const ConsoleSError = log.ConsoleSError
 
+const myDDB = require('../lib/utils-ddb')
+
 module.exports.resolveMain = (context, args) => {
   ConsoleSLog('resolveMain context: ', context)
   ConsoleSLog('resolveMain args: ', args)
 
-  //start with NPMs
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'npms/npm/' + args.name
-  }
+  const source = 'npms'
+  const ecosystem = 'npm'
+  const pkg = args.name
+
   // main currently relies on npms
-  return s3.getObject(params).promise().then(npmsData => {
-    var npmsDataBody = JSON.parse(npmsData.Body.toString('utf-8'))
+  return myDDB.GetJson(source, ecosystem, pkg).then((npmsDataBody) => {
     var result = {
       source: 'npms',
       name: npmsDataBody.collected.metadata.name,
@@ -36,8 +35,7 @@ module.exports.resolveMain = (context, args) => {
         Bucket: 'stpl-data',
         Key: 'librariosio/npm/' + args.name
       }
-      return s3.getObject(params).promise().then(libioData => {
-        var libioDataBody = JSON.parse(libioData.Body.toString('utf-8'))
+      return myDDB.GetJson(source, ecosystem, pkg).then((libioDataBody) => {
         var result = {
           source: 'librariesio',
           name: libioDataBody.name,
@@ -61,19 +59,16 @@ module.exports.resolveMain = (context, args) => {
 module.exports.resolveVersioneye = (context, args) => {
   ConsoleSLog('resolveVersioneye context: ', context)
   ConsoleSLog('resolveVersioneye args: ', args)
-  const pkg = args.name
-  const ecosystem = 'npm'
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'versioneye/' + ecosystem + '/' + pkg
-  }
-  return s3.getObject(params).promise().then(versioneyeData => {
-    var versioneyeDataBody = JSON.parse(versioneyeData.Body.toString('utf-8'))
 
+  const source = 'versioneye'
+  const ecosystem = 'npm'
+  const pkg = args.name
+
+  return myDDB.GetJson(source, ecosystem, pkg).then((versioneyeDataBody) => {
     var result = {
       metadata: {
         source: 'versioneye',
-        last_modified: versioneyeData.LastModified,
+        last_modified: "todo",
       },
       name: versioneyeDataBody.name,
       language: versioneyeDataBody.language,
@@ -91,13 +86,11 @@ module.exports.resolveNpms = (context, args) => {
   ConsoleSLog('resolveNpms context: ', context)
   ConsoleSLog('resolveNpms args: ', args)
 
+  const source = 'npms'
+  const ecosystem = 'npm'
   const pkg = args.name
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'npms/npm/' + pkg
-  }
-  return s3.getObject(params).promise().then(npmsData => {
-    var npmsDataBody = JSON.parse(npmsData.Body.toString('utf-8'))
+
+  return myDDB.GetJson(source, ecosystem, pkg).then((npmsDataBody) => {
 
     var dependenciesAsArray = []
     for (var property in npmsDataBody.collected.metadata.dependencies) {
@@ -107,7 +100,7 @@ module.exports.resolveNpms = (context, args) => {
     var result = {
       metadata: {
         source: 'npms',
-        last_modified: npmsData.LastModified,
+        last_modified: "TODO npmsData.LastModified",
       },
       collected: {
         metadata: {
@@ -140,20 +133,16 @@ module.exports.resolveNpms = (context, args) => {
 }
 
 module.exports.resolveSnyk = (context, args) => {
-  ConsoleSLog('resolveVersioneye context: ', context)('resolveVersioneye args: ', args)
-  const pkg = args.name
+  ConsoleSLog('resolveSnyk context: ', context)('resolveSnyk args: ', args)
+  const source = 'snyk'
   const ecosystem = 'npm'
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'snyk/' + ecosystem + '/' + pkg
-  }
-  return s3.getObject(params).promise().then(snykData => {
-    var snykDataBody = JSON.parse(snykData.Body.toString('utf-8'))
+  const pkg = args.name
 
+  return myDDB.GetJson(source, ecosystem, pkg).then((snykDataBody) => {
     var result = {
       metadata: {
         source: 'snyk',
-        last_modified: snykData.LastModified,
+        last_modified: "TODO snykData.LastModified",
       },
       readme: snykDataBody.readme
     }
@@ -167,20 +156,16 @@ module.exports.resolveSnyk = (context, args) => {
 module.exports.resolveDaviddm = (context, args) => {
   ConsoleSLog('resolveDaviddm context: ', context)('resolveDaviddm args: ', args)
 
-  const pkg = args.name
+  const source = 'daviddm'
   const ecosystem = 'npm'
+  const pkg = args.name
 
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'daviddm/by-ep/' + ecosystem + '/' + pkg
-  }
-  return s3.getObject(params).promise().then(daviddmData => {
-    var daviddmBody = JSON.parse(daviddmData.Body.toString('utf-8'))
+  return myDDB.GetJson(source, ecosystem, pkg).then((daviddmBody) => {
 
     var result = {
       metadata: {
         source: 'daviddm',
-        last_modified: daviddmData.LastModified,
+        last_modified: 'TODO daviddmData.LastModified',
       },
       status: daviddmBody.status,
       deps: daviddmBody.deps

@@ -1,25 +1,27 @@
 const AWS = require('aws-sdk')
-const s3 = new AWS.S3()
 
 const log = require('../lib/utils-log')
+
+const myDDB = require('../lib/utils-ddb')
+
 const ConsoleSLog = log.ConsoleSLog
 const ConsoleSError = log.ConsoleSError
 
 module.exports.resolveLibrariesio = (context, args) => {
   ConsoleSLog('resolveLibrariesio context: ', context)
   ConsoleSLog('resolveLibrariesio args: ', args)
-  const pkg = args.name
+
+  const source = 'librariosio'
   const ecosystem = 'npm'
-  var params = {
-    Bucket: 'stpl-data',
-    Key: 'librariosio/' + ecosystem + '/' + pkg
-  }
-  return s3.getObject(params).promise().then(librariosioData => {
-    var librariosioDataBody = JSON.parse(librariosioData.Body.toString('utf-8'))
+  const pkg = args.name
+
+  return myDDB.GetJson(source, ecosystem, pkg).then((librariosioDataBody) => {
+    ConsoleSLog('resolveLibrariesio GetJson:', librariosioDataBody)
+
     var result = {
       metadata: {
         source: 'librariosio',
-        last_modified: librariosioData.LastModified,
+        last_modified: 'TBD',
       },
       name: librariosioDataBody.name,
       platform: librariosioDataBody.platform,
@@ -32,9 +34,11 @@ module.exports.resolveLibrariesio = (context, args) => {
       latest_release_number: librariosioDataBody.latest_release_number,
       keywords: librariosioDataBody.keywords
     }
+
     ConsoleSLog('resolveLibrariesio result:', result)
     return result
   }).catch(err => {
     ConsoleSError('Err in resolveLibrariesio:', err)
   })
+
 }

@@ -1,7 +1,7 @@
 'use strict'
 
 const myHttp = require('lib/utils-http')
-const myS3 = require('lib/utils-s3')
+const myDDB = require('./lib/utils-ddb')
 
 const VERSIONEYE_API_KEY = process.env.VERSIONEYE_API_KEY
 
@@ -30,9 +30,9 @@ exports.handle = (event, context, mainCallback) => {
       context.fail(err)
       mainCallback(err)
     }
-    const key = 'versioneye/' + ecosystem + '/' + pkg
-    myS3.SaveJsonToS3(key, json).then((msg) => {
-      console.log('success: SaveJsonToS3', msg)
+    const source = 'versioneye'
+    myDDB.PutJson(source, ecosystem, pkg, json).then((msg) => {
+      console.log('success: PutJson', msg)
       mainCallback()
     }).catch((err) => {
       console.log('error:', err)

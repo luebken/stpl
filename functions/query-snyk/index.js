@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const myS3 = require('lib/utils-s3')
+const myDDB = require('./lib/utils-ddb')
 
 exports.handle = (event, context, mainCallback) => {
   var message = event.Records[0].Sns.Message
@@ -38,9 +38,9 @@ exports.handle = (event, context, mainCallback) => {
         var json = {
           readme: data.Body.toString('utf-8')
         }
-        const key = 'snyk/' + ecosystem + '/' + pkg
-        myS3.SaveJsonToS3(key, json).then((msg) => {
-          console.log('success: SaveJsonToS3', msg)
+        const source = 'snyk'
+        myDDB.PutJson(source, ecosystem, pkg, json).then((msg) => {
+          console.log('success: PutJson', msg)
           mainCallback()
         }).catch((err) => {
           console.log('error:', err)
